@@ -19,6 +19,12 @@ public:
 	~SHA1();
 	void update(const unsigned char* data, const unsigned int dataLen);
 	void digest(unsigned char** digest, unsigned int* digestLen);
+	void spliceInState(const unsigned char* hash);
+
+//	void dumpState() const;
+//	void dumpBuff() const;
+	
+	static void calculatePad(const unsigned long messageLen, unsigned char** pad, unsigned int* padLen);
 private:
 	void updateInternalState();
 

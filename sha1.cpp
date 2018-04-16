@@ -43,18 +43,12 @@ void SHA1::digest(unsigned char** digest, unsigned int* digestLen)
 
 	*digestLen = SHA1_LENGTH;
 	*digest = new unsigned char[*digestLen];
-	unsigned long ml = this->messageLen;
+	unsigned char* pad = NULL;
+	unsigned int padLen = 0;
 
-	update((unsigned char*) "\x80", 1);
-	while ((messageLen + 64) % 512)
-		update((unsigned char*) "\x00", 1);
-
-#if BYTE_ORDER == LITTLE_ENDIAN
-	ml = __builtin_bswap64(ml);
-#endif
-
-	update((unsigned char*) &ml, sizeof (ml));
-
+	SHA1::calculatePad(messageLen, &pad, &padLen);
+	update(pad, padLen);
+	
 #if BYTE_ORDER == LITTLE_ENDIAN
 	h0 = __builtin_bswap32(h0);
 	h1 = __builtin_bswap32(h1);
@@ -70,6 +64,64 @@ void SHA1::digest(unsigned char** digest, unsigned int* digestLen)
 	memcpy(*digest + 16, (void*) &h4, 4);
 
 	complete = true;
+	
+	delete [] pad;
+}
+
+void SHA1::spliceInState(const unsigned char* hash)
+{
+	memset(buff, 0, BUFFLEN);
+
+	memcpy(&h0, hash, 4);
+	memcpy((void*) &h1, hash + 4, 4);
+	memcpy((void*) &h2, hash + 8, 4);
+	memcpy((void*) &h3, hash + 12, 4);
+	memcpy((void*) &h4, hash + 16, 4);
+
+#if BYTE_ORDER == BIG_ENDIAN
+	h0 = __builtin_bswap32(h0);
+	h1 = __builtin_bswap32(h1);
+	h2 = __builtin_bswap32(h2);
+	h3 = __builtin_bswap32(h3);
+	h4 = __builtin_bswap32(h4);
+#endif
+}
+
+/*
+void SHA1::dumpState() const
+{
+	cout << hex << h0 << endl;
+	cout << hex << h1 << endl;
+	cout << hex << h2 << endl;
+	cout << hex << h3 << endl;
+	cout << hex << h4 << endl;
+}
+
+void SHA1::dumpBuff() const
+{
+	for (unsigned int i = 0; i < BUFFLEN; i++)
+	{
+		if (!(i % 16 && i)) cout << endl;
+		cout << hex << setw(2) << setfill('0') << (unsigned int)buff[i];
+	}
+	cout << endl;
+}
+*/
+
+void SHA1::calculatePad(const unsigned long messageLen, unsigned char** pad, unsigned int* padLen)
+{
+	unsigned long ml = messageLen;
+#if BYTE_ORDER == LITTLE_ENDIAN
+	ml = __builtin_bswap64(ml);
+#endif
+
+	*padLen = 64 - ((messageLen / 8) % 64);
+	*padLen += *padLen < 9 ? 64 : 0;
+	
+	*pad = new unsigned char[*padLen];
+	memset(*pad, 0, *padLen);
+	*pad[0] = '\x80';
+	memcpy(*pad + *padLen - 8, &ml, sizeof(ml));
 }
 
 void SHA1::updateInternalState()

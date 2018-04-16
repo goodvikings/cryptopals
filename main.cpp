@@ -15,7 +15,8 @@
 //#include "profile.h"
 //#include "cbc_bit_flip.h"
 //#include "cbc_padding.h"
-//#include "sha1.h"
+#include "sha1_mac.h"
+#include "sha1.h"
 
 using namespace std;
 
@@ -23,17 +24,33 @@ using namespace std;
 //void fox();
 //void challenge10();
 
+
 int main(int argc, char** argv)
 {
 
-//	unsigned char* input = (unsigned char*)"AAAAAAAAAAAAAAAA";
-//	unsigned char* hash = NULL;
+	
+	/*
+	unsigned char message[] = "The quick brown fox jumps over the lazy dog";
+	unsigned char* mac = NULL;
+	unsigned int macLen = 0;
+	
+	generateMac(message, strlen((char*)message), &mac, &macLen);
 
-//	sha1(input, 16, &hash);
+	if (verifyMac(message, strlen((char*)message), mac, macLen))
+		cout << "MAC checks out" << endl;
+	else
+		cout << "MAC verification error" << endl;
+	
+	delete [] mac;
+	*/
+	//	unsigned char* input = (unsigned char*)"AAAAAAAAAAAAAAAA";
+	//	unsigned char* hash = NULL;
 
-//	cout << sha1_mac_verify(NULL, 0, input, 16, hash) << endl;
+	//	sha1(input, 16, &hash);
 
-//	delete [] hash;
+	//	cout << sha1_mac_verify(NULL, 0, input, 16, hash) << endl;
+
+	//	delete [] hash;
 
 	/*	unsigned char* ct = NULL;
 		unsigned int ctLen = 0;
