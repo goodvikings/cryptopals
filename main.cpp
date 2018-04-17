@@ -24,11 +24,53 @@ using namespace std;
 //void fox();
 //void challenge10();
 
-
 int main(int argc, char** argv)
 {
+	const unsigned char orig[] = "comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon";
+	const unsigned int origLen = strlen((char*) orig);
+	const unsigned char attackSuffix[] = ";admin=true";
+	const unsigned int attackSuffixLen = strlen((char*) attackSuffix);
+	unsigned char* origHash = NULL;
+	unsigned int origHashLen = 0;
+	bool found = false;
 
-	
+	generateMac(orig, origLen, &origHash, &origHashLen);
+	for (unsigned int i = 0; i < 512 && !found; i++) // secret key length brute force
+	{
+		unsigned char* pad = NULL;
+		unsigned int padLen = 0;
+		unsigned char* full = NULL;
+		unsigned int fullLen = 0;
+		unsigned char* posionedMac = NULL;
+		unsigned int poisonedMacLen = 0;
+		SHA1 digestor;
+
+		SHA1::calculatePad((origLen + i) * 8, &pad, &padLen);
+
+		fullLen = origLen + padLen + attackSuffixLen;
+		full = new unsigned char[fullLen];
+
+		memcpy(full, orig, origLen);
+		memcpy(full + origLen, pad, padLen);
+		memcpy(full + origLen + padLen, attackSuffix, attackSuffixLen);
+
+		digestor.spliceInState(origHash, (origLen + padLen + i) * 8);
+		digestor.update(attackSuffix, attackSuffixLen);
+		digestor.digest(&posionedMac, &poisonedMacLen);
+		
+		if (verifyMac(full, fullLen, posionedMac, poisonedMacLen)) // internal buffer for poisoned mac includes 
+		{
+			found = true;
+			for (unsigned int i = 0; i < fullLen; i++)
+				cout << full[i];
+		}
+
+		delete [] posionedMac;
+		delete [] pad;
+		delete [] full;
+	}
+
+	delete [] origHash;
 	/*
 	unsigned char message[] = "The quick brown fox jumps over the lazy dog";
 	unsigned char* mac = NULL;
@@ -42,7 +84,7 @@ int main(int argc, char** argv)
 		cout << "MAC verification error" << endl;
 	
 	delete [] mac;
-	*/
+	 */
 	//	unsigned char* input = (unsigned char*)"AAAAAAAAAAAAAAAA";
 	//	unsigned char* hash = NULL;
 

@@ -12,7 +12,6 @@ SHA1::SHA1()
 	h3 = 0x10325476;
 	h4 = 0xC3D2E1F0;
 	messageLen = 0;
-	complete = false;
 	buff = new unsigned char[BUFFLEN];
 	memset(buff, 0, BUFFLEN);
 }
@@ -24,9 +23,6 @@ SHA1::~SHA1()
 
 void SHA1::update(const unsigned char* data, const unsigned int dataLen)
 {
-	if (complete)
-		throw SHA1Exception("Already marked complete");
-
 	for (unsigned int i = 0; i < dataLen; i++)
 	{
 		buff[(messageLen / 8) % BUFFLEN] = data[i];
@@ -38,16 +34,13 @@ void SHA1::update(const unsigned char* data, const unsigned int dataLen)
 
 void SHA1::digest(unsigned char** digest, unsigned int* digestLen)
 {
-	if (complete)
-		throw SHA1Exception("Already marked complete");
-
 	*digestLen = SHA1_LENGTH;
 	*digest = new unsigned char[*digestLen];
 	unsigned char* pad = NULL;
 	unsigned int padLen = 0;
 
 	SHA1::calculatePad(messageLen, &pad, &padLen);
-	update(pad, padLen);
+	update(pad, padLen);	
 	
 #if BYTE_ORDER == LITTLE_ENDIAN
 	h0 = __builtin_bswap32(h0);
@@ -63,22 +56,22 @@ void SHA1::digest(unsigned char** digest, unsigned int* digestLen)
 	memcpy(*digest + 12, (void*) &h3, 4);
 	memcpy(*digest + 16, (void*) &h4, 4);
 
-	complete = true;
-	
 	delete [] pad;
 }
 
-void SHA1::spliceInState(const unsigned char* hash)
+void SHA1::spliceInState(const unsigned char* hash, const unsigned long messageLen)
 {
-	memset(buff, 0, BUFFLEN);
-
+	if (messageLen % 512)
+		throw SHA1Exception("messageLen needs to be multiple of block size 512");
+	this->messageLen = messageLen;
+	
 	memcpy(&h0, hash, 4);
 	memcpy((void*) &h1, hash + 4, 4);
 	memcpy((void*) &h2, hash + 8, 4);
 	memcpy((void*) &h3, hash + 12, 4);
 	memcpy((void*) &h4, hash + 16, 4);
 
-#if BYTE_ORDER == BIG_ENDIAN
+#if BYTE_ORDER == LITTLE_ENDIAN
 	h0 = __builtin_bswap32(h0);
 	h1 = __builtin_bswap32(h1);
 	h2 = __builtin_bswap32(h2);
@@ -90,11 +83,11 @@ void SHA1::spliceInState(const unsigned char* hash)
 /*
 void SHA1::dumpState() const
 {
-	cout << hex << h0 << endl;
-	cout << hex << h1 << endl;
-	cout << hex << h2 << endl;
-	cout << hex << h3 << endl;
-	cout << hex << h4 << endl;
+	cout << hex << setw(8) << setfill('0') << h0 << endl;
+	cout << hex << setw(8) << setfill('0') << h1 << endl;
+	cout << hex << setw(8) << setfill('0') << h2 << endl;
+	cout << hex << setw(8) << setfill('0') << h3 << endl;
+	cout << hex << setw(8) << setfill('0') << h4 << endl;
 }
 
 void SHA1::dumpBuff() const

@@ -19,7 +19,7 @@ public:
 	~SHA1();
 	void update(const unsigned char* data, const unsigned int dataLen);
 	void digest(unsigned char** digest, unsigned int* digestLen);
-	void spliceInState(const unsigned char* hash);
+	void spliceInState(const unsigned char* hash, const unsigned long messageLen);
 
 //	void dumpState() const;
 //	void dumpBuff() const;
@@ -28,7 +28,6 @@ public:
 private:
 	void updateInternalState();
 
-	bool complete;
 	unsigned int h0, h1, h2, h3, h4;
 	unsigned long messageLen;
 	unsigned char* buff;
