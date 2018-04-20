@@ -15,8 +15,10 @@
 //#include "profile.h"
 //#include "cbc_bit_flip.h"
 //#include "cbc_padding.h"
-#include "sha1_mac.h"
+#include "mac.h"
+#include "mac_attack.h"
 #include "sha1.h"
+#include "md4.h"
 
 using namespace std;
 
@@ -30,47 +32,37 @@ int main(int argc, char** argv)
 	const unsigned int origLen = strlen((char*) orig);
 	const unsigned char attackSuffix[] = ";admin=true";
 	const unsigned int attackSuffixLen = strlen((char*) attackSuffix);
+	unsigned char* attackMessage = NULL;
+	unsigned int attackMessageLen = 0;
+	unsigned char* attackMac = NULL;
 	unsigned char* origHash = NULL;
+	unsigned char* hex = NULL;
+	unsigned int hexLen = 0;
 	unsigned int origHashLen = 0;
-	bool found = false;
 
-	generateMac(orig, origLen, &origHash, &origHashLen);
-	for (unsigned int i = 0; i < 512 && !found; i++) // secret key length brute force
-	{
-		unsigned char* pad = NULL;
-		unsigned int padLen = 0;
-		unsigned char* full = NULL;
-		unsigned int fullLen = 0;
-		unsigned char* posionedMac = NULL;
-		unsigned int poisonedMacLen = 0;
-		SHA1 digestor;
+	generateMD4Mac(orig, origLen, &origHash, &origHashLen);
 
-		SHA1::calculatePad((origLen + i) * 8, &pad, &padLen);
+	md4_mac_attack(orig, origLen, attackSuffix, attackSuffixLen, origHash, &attackMessage, &attackMessageLen, &attackMac);
 
-		fullLen = origLen + padLen + attackSuffixLen;
-		full = new unsigned char[fullLen];
+	to_hex(attackMessage, &hex, attackMessageLen, &hexLen);
+	cout << "Message: " << endl;
+	for (unsigned int i = 0; i < hexLen; i++)
+		cout << hex[i];
+	cout << endl;
 
-		memcpy(full, orig, origLen);
-		memcpy(full + origLen, pad, padLen);
-		memcpy(full + origLen + padLen, attackSuffix, attackSuffixLen);
+	delete [] hex;
 
-		digestor.spliceInState(origHash, (origLen + padLen + i) * 8);
-		digestor.update(attackSuffix, attackSuffixLen);
-		digestor.digest(&posionedMac, &poisonedMacLen);
-		
-		if (verifyMac(full, fullLen, posionedMac, poisonedMacLen)) // internal buffer for poisoned mac includes 
-		{
-			found = true;
-			for (unsigned int i = 0; i < fullLen; i++)
-				cout << full[i];
-		}
-
-		delete [] posionedMac;
-		delete [] pad;
-		delete [] full;
-	}
+	to_hex(attackMac, &hex, MD4_LENGTH, &hexLen);
+	cout << "MAC: " << endl;
+	for (unsigned int i = 0; i < hexLen; i++)
+		cout << hex[i];
+	cout << endl;
 
 	delete [] origHash;
+	delete [] attackMessage;
+	delete [] attackMac;
+	delete [] hex;
+
 	/*
 	unsigned char message[] = "The quick brown fox jumps over the lazy dog";
 	unsigned char* mac = NULL;
@@ -487,7 +479,6 @@ int main(int argc, char** argv)
 			xorBuffer(keybuff, ciphertextRaw, &plaintext, ciphertextRawLen);
 
 			float score = scoreBuffer(plaintext, ciphertextRawLen);
-	//		if (strncmp("Now that the party is jumping\n", (char*)plaintext, 10))
 			if (score < 10)
 			{
 				cout << score << " " << plaintext << endl;
@@ -521,9 +512,6 @@ int main(int argc, char** argv)
 		delete [] keybuff;
 	 */
 	/*
-
-
-
 		unsigned char* keybuff = new unsigned char[ciphertextRawLen];
 		unsigned char* plaintext = NULL;
 		memset(keybuff, (unsigned char)foo, ciphertextRawLen);

@@ -4,56 +4,60 @@
 CC=g++
 BUILD=build
 DIST=dist
-CCFLAGS=-c -g -Wall --std=c++98
+CCFLAGS=-c -g -Wall
 LDFLAGS=-o $(DIST)/prog -lssl -lcrypto 
 
 all:	$(DIST)/prog
-$(DIST)/prog:	$(BUILD) $(DIST) $(BUILD)/sha1_mac.o $(BUILD)/xors.o $(BUILD)/kvpair.o $(BUILD)/ctr.o $(BUILD)/language.o $(BUILD)/ctr_bit_flip.o $(BUILD)/main.o $(BUILD)/profile.o $(BUILD)/cbc_bit_flip.o $(BUILD)/misc.o $(BUILD)/mt19937_attack.o $(BUILD)/mt19937.o $(BUILD)/mt19937_cipher.o $(BUILD)/rand.o $(BUILD)/encoders.o $(BUILD)/ecb.o $(BUILD)/cbc_padding.o $(BUILD)/exception.o $(BUILD)/sha1.o $(BUILD)/aes.o $(BUILD)/ctr_randomaccess.o $(BUILD)/pkcs7.o 
+$(DIST)/prog:	$(BUILD) $(DIST) $(BUILD)/misc.o $(BUILD)/mac_attack.o $(BUILD)/profile.o $(BUILD)/xors.o $(BUILD)/mt19937_attack.o $(BUILD)/pkcs7.o $(BUILD)/ecb.o $(BUILD)/cbc_bit_flip.o $(BUILD)/ctr_randomaccess.o $(BUILD)/rand.o $(BUILD)/exception.o $(BUILD)/cbc_padding.o $(BUILD)/ctr.o $(BUILD)/encoders.o $(BUILD)/mt19937_cipher.o $(BUILD)/sha1.o $(BUILD)/ctr_bit_flip.o $(BUILD)/kvpair.o $(BUILD)/main.o $(BUILD)/aes.o $(BUILD)/language.o $(BUILD)/md4.o $(BUILD)/mac.o $(BUILD)/mt19937.o 
 	$(CC) $(BUILD)/*.o $(LDFLAGS)
-$(BUILD)/sha1_mac.o:	sha1_mac.cpp sha1_mac.h
-	$(CC) sha1_mac.cpp $(CCFLAGS) -o $(BUILD)/sha1_mac.o
-$(BUILD)/xors.o:	xors.cpp language.h xors.h
-	$(CC) xors.cpp $(CCFLAGS) -o $(BUILD)/xors.o
-$(BUILD)/kvpair.o:	kvpair.cpp kvpair.h
-	$(CC) kvpair.cpp $(CCFLAGS) -o $(BUILD)/kvpair.o
-$(BUILD)/ctr.o:	ctr.cpp aes.h ctr.h encoders.h xors.h
-	$(CC) ctr.cpp $(CCFLAGS) -o $(BUILD)/ctr.o
-$(BUILD)/language.o:	language.cpp language.h
-	$(CC) language.cpp $(CCFLAGS) -o $(BUILD)/language.o
-$(BUILD)/ctr_bit_flip.o:	ctr_bit_flip.cpp aes.h ctr_bit_flip.h misc.h pkcs7.h
-	$(CC) ctr_bit_flip.cpp $(CCFLAGS) -o $(BUILD)/ctr_bit_flip.o
-$(BUILD)/main.o:	main.cpp aes.h ctr.h encoders.h misc.h ctr_bit_flip.h cbc_bit_flip.h
-	$(CC) main.cpp $(CCFLAGS) -o $(BUILD)/main.o
-$(BUILD)/profile.o:	profile.cpp aes.h pkcs7.h profile.h
-	$(CC) profile.cpp $(CCFLAGS) -o $(BUILD)/profile.o
-$(BUILD)/cbc_bit_flip.o:	cbc_bit_flip.cpp aes.h cbc_bit_flip.h misc.h pkcs7.h
-	$(CC) cbc_bit_flip.cpp $(CCFLAGS) -o $(BUILD)/cbc_bit_flip.o
 $(BUILD)/misc.o:	misc.cpp misc.h
 	$(CC) misc.cpp $(CCFLAGS) -o $(BUILD)/misc.o
+$(BUILD)/mac_attack.o:	mac_attack.cpp sha1.h mac.h mac_attack.h md4.h
+	$(CC) mac_attack.cpp $(CCFLAGS) -o $(BUILD)/mac_attack.o
+$(BUILD)/profile.o:	profile.cpp aes.h pkcs7.h profile.h
+	$(CC) profile.cpp $(CCFLAGS) -o $(BUILD)/profile.o
+$(BUILD)/xors.o:	xors.cpp language.h xors.h
+	$(CC) xors.cpp $(CCFLAGS) -o $(BUILD)/xors.o
 $(BUILD)/mt19937_attack.o:	mt19937_attack.cpp mt19937.h mt19937_attack.h
 	$(CC) mt19937_attack.cpp $(CCFLAGS) -o $(BUILD)/mt19937_attack.o
-$(BUILD)/mt19937.o:	mt19937.cpp mt19937.h
-	$(CC) mt19937.cpp $(CCFLAGS) -o $(BUILD)/mt19937.o
-$(BUILD)/mt19937_cipher.o:	mt19937_cipher.cpp mt19937.h mt19937_cipher.h rand.h aes.h misc.h
-	$(CC) mt19937_cipher.cpp $(CCFLAGS) -o $(BUILD)/mt19937_cipher.o
-$(BUILD)/rand.o:	rand.cpp 
-	$(CC) rand.cpp $(CCFLAGS) -o $(BUILD)/rand.o
-$(BUILD)/encoders.o:	encoders.cpp encoders.h
-	$(CC) encoders.cpp $(CCFLAGS) -o $(BUILD)/encoders.o
-$(BUILD)/ecb.o:	ecb.cpp aes.h ecb.h encoders.h language.h pkcs7.h
-	$(CC) ecb.cpp $(CCFLAGS) -o $(BUILD)/ecb.o
-$(BUILD)/cbc_padding.o:	cbc_padding.cpp aes.h cbc_padding.h encoders.h pkcs7.h rand.h
-	$(CC) cbc_padding.cpp $(CCFLAGS) -o $(BUILD)/cbc_padding.o
-$(BUILD)/exception.o:	exception.cpp exception.h
-	$(CC) exception.cpp $(CCFLAGS) -o $(BUILD)/exception.o
-$(BUILD)/sha1.o:	sha1.cpp sha1.h
-	$(CC) sha1.cpp $(CCFLAGS) -o $(BUILD)/sha1.o
-$(BUILD)/aes.o:	aes.cpp aes.h pkcs7.h rand.h xors.h
-	$(CC) aes.cpp $(CCFLAGS) -o $(BUILD)/aes.o
-$(BUILD)/ctr_randomaccess.o:	ctr_randomaccess.cpp aes.h ctr_randomaccess.h encoders.h misc.h
-	$(CC) ctr_randomaccess.cpp $(CCFLAGS) -o $(BUILD)/ctr_randomaccess.o
 $(BUILD)/pkcs7.o:	pkcs7.cpp pkcs7.h
 	$(CC) pkcs7.cpp $(CCFLAGS) -o $(BUILD)/pkcs7.o
+$(BUILD)/ecb.o:	ecb.cpp aes.h ecb.h encoders.h language.h pkcs7.h
+	$(CC) ecb.cpp $(CCFLAGS) -o $(BUILD)/ecb.o
+$(BUILD)/cbc_bit_flip.o:	cbc_bit_flip.cpp aes.h cbc_bit_flip.h misc.h pkcs7.h
+	$(CC) cbc_bit_flip.cpp $(CCFLAGS) -o $(BUILD)/cbc_bit_flip.o
+$(BUILD)/ctr_randomaccess.o:	ctr_randomaccess.cpp aes.h ctr_randomaccess.h encoders.h misc.h
+	$(CC) ctr_randomaccess.cpp $(CCFLAGS) -o $(BUILD)/ctr_randomaccess.o
+$(BUILD)/rand.o:	rand.cpp 
+	$(CC) rand.cpp $(CCFLAGS) -o $(BUILD)/rand.o
+$(BUILD)/exception.o:	exception.cpp exception.h
+	$(CC) exception.cpp $(CCFLAGS) -o $(BUILD)/exception.o
+$(BUILD)/cbc_padding.o:	cbc_padding.cpp aes.h cbc_padding.h encoders.h pkcs7.h rand.h
+	$(CC) cbc_padding.cpp $(CCFLAGS) -o $(BUILD)/cbc_padding.o
+$(BUILD)/ctr.o:	ctr.cpp aes.h ctr.h encoders.h xors.h
+	$(CC) ctr.cpp $(CCFLAGS) -o $(BUILD)/ctr.o
+$(BUILD)/encoders.o:	encoders.cpp encoders.h
+	$(CC) encoders.cpp $(CCFLAGS) -o $(BUILD)/encoders.o
+$(BUILD)/mt19937_cipher.o:	mt19937_cipher.cpp mt19937.h mt19937_cipher.h rand.h aes.h misc.h
+	$(CC) mt19937_cipher.cpp $(CCFLAGS) -o $(BUILD)/mt19937_cipher.o
+$(BUILD)/sha1.o:	sha1.cpp sha1.h
+	$(CC) sha1.cpp $(CCFLAGS) -o $(BUILD)/sha1.o
+$(BUILD)/ctr_bit_flip.o:	ctr_bit_flip.cpp aes.h ctr_bit_flip.h misc.h pkcs7.h
+	$(CC) ctr_bit_flip.cpp $(CCFLAGS) -o $(BUILD)/ctr_bit_flip.o
+$(BUILD)/kvpair.o:	kvpair.cpp kvpair.h
+	$(CC) kvpair.cpp $(CCFLAGS) -o $(BUILD)/kvpair.o
+$(BUILD)/main.o:	main.cpp aes.h ctr.h encoders.h misc.h ctr_bit_flip.h cbc_bit_flip.h mac.h mac_attack.h sha1.h md4.h
+	$(CC) main.cpp $(CCFLAGS) -o $(BUILD)/main.o
+$(BUILD)/aes.o:	aes.cpp aes.h pkcs7.h rand.h xors.h
+	$(CC) aes.cpp $(CCFLAGS) -o $(BUILD)/aes.o
+$(BUILD)/language.o:	language.cpp language.h
+	$(CC) language.cpp $(CCFLAGS) -o $(BUILD)/language.o
+$(BUILD)/md4.o:	md4.cpp md4.h
+	$(CC) md4.cpp $(CCFLAGS) -o $(BUILD)/md4.o
+$(BUILD)/mac.o:	mac.cpp mac.h md4.h sha1.h
+	$(CC) mac.cpp $(CCFLAGS) -o $(BUILD)/mac.o
+$(BUILD)/mt19937.o:	mt19937.cpp mt19937.h
+	$(CC) mt19937.cpp $(CCFLAGS) -o $(BUILD)/mt19937.o
 $(BUILD):
 	@mkdir $(BUILD)
 $(DIST):
@@ -64,3 +68,12 @@ install:
 	install $(DIST)/prog /usr/local/bin/
 love:
 	@echo Not war
+America:	america
+america:
+	@echo
+Great:	great
+great:
+	@printf '_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|\n___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|__\n_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|\n___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|__\n_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|\n___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|__\n_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|\n___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|__\n_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|\n___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|__\n_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|\n___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|__\n_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|\n___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|__\n_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|\n___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|__\n_|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|\n___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|___|__\n'
+Again:	again
+again:
+	@echo

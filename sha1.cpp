@@ -1,7 +1,7 @@
 #include <cstring>
 #include "sha1.h"
 
-#define BUFFLEN 64
+#define SHA1BUFFLEN 64
 #define CircularShift(bits,word) (((word) << (bits)) | ((word) >> (32-(bits))))
 
 SHA1::SHA1()
@@ -12,8 +12,8 @@ SHA1::SHA1()
 	h3 = 0x10325476;
 	h4 = 0xC3D2E1F0;
 	messageLen = 0;
-	buff = new unsigned char[BUFFLEN];
-	memset(buff, 0, BUFFLEN);
+	buff = new unsigned char[SHA1BUFFLEN];
+	memset(buff, 0, SHA1BUFFLEN);
 }
 
 SHA1::~SHA1()
@@ -25,9 +25,9 @@ void SHA1::update(const unsigned char* data, const unsigned int dataLen)
 {
 	for (unsigned int i = 0; i < dataLen; i++)
 	{
-		buff[(messageLen / 8) % BUFFLEN] = data[i];
+		buff[(messageLen / 8) % SHA1BUFFLEN] = data[i];
 		messageLen += 8;
-		if (!((messageLen / 8) % BUFFLEN))
+		if (!((messageLen / 8) % SHA1BUFFLEN))
 			updateInternalState();
 	}
 }
@@ -40,7 +40,7 @@ void SHA1::digest(unsigned char** digest, unsigned int* digestLen)
 	unsigned int padLen = 0;
 
 	SHA1::calculatePad(messageLen, &pad, &padLen);
-	update(pad, padLen);	
+	update(pad, padLen);
 	
 #if BYTE_ORDER == LITTLE_ENDIAN
 	h0 = __builtin_bswap32(h0);
@@ -101,22 +101,6 @@ void SHA1::dumpBuff() const
 }
 */
 
-void SHA1::calculatePad(const unsigned long messageLen, unsigned char** pad, unsigned int* padLen)
-{
-	unsigned long ml = messageLen;
-#if BYTE_ORDER == LITTLE_ENDIAN
-	ml = __builtin_bswap64(ml);
-#endif
-
-	*padLen = 64 - ((messageLen / 8) % 64);
-	*padLen += *padLen < 9 ? 64 : 0;
-	
-	*pad = new unsigned char[*padLen];
-	memset(*pad, 0, *padLen);
-	*pad[0] = '\x80';
-	memcpy(*pad + *padLen - 8, &ml, sizeof(ml));
-}
-
 void SHA1::updateInternalState()
 {
 	unsigned int a = h0;
@@ -163,4 +147,20 @@ void SHA1::updateInternalState()
 	h4 += e;
 
 	delete [] w;
+}
+
+void SHA1::calculatePad(const unsigned long messageLen, unsigned char** pad, unsigned int* padLen)
+{
+	unsigned long ml = messageLen;
+#if BYTE_ORDER == LITTLE_ENDIAN
+	ml = __builtin_bswap64(ml);
+#endif
+
+	*padLen = 64 - ((messageLen / 8) % 64);
+	*padLen += *padLen < 9 ? 64 : 0;
+	
+	*pad = new unsigned char[*padLen];
+	memset(*pad, 0, *padLen);
+	*pad[0] = '\x80';
+	memcpy(*pad + *padLen - 8, &ml, sizeof(ml));
 }

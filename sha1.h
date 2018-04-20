@@ -9,7 +9,7 @@
 class SHA1Exception : public Exception
 {
 public:
-	SHA1Exception(std::string reason) : Exception(reason) {};	
+	SHA1Exception(std::string reason) : Exception(reason) {};
 };
 
 class SHA1
@@ -21,9 +21,9 @@ public:
 	void digest(unsigned char** digest, unsigned int* digestLen);
 	void spliceInState(const unsigned char* hash, const unsigned long messageLen);
 
-//	void dumpState() const;
-//	void dumpBuff() const;
-	
+	//	void dumpState() const;
+	//	void dumpBuff() const;
+
 	static void calculatePad(const unsigned long messageLen, unsigned char** pad, unsigned int* padLen);
 private:
 	void updateInternalState();
