@@ -8,7 +8,7 @@
 void sha1_mac_attack(const unsigned char* origMessage, const unsigned int origMessageLen, const unsigned char* toAppend, const unsigned int toAppendLen, const unsigned char* origMac, unsigned char** resultMessage, unsigned int* resultMessageLen, unsigned char** resultMac)
 {
 	bool found = false;
-	for (unsigned int i = 16; i < 17 && !found; i++) // secret key length brute force
+	for (unsigned int i = 0; i < 512 && !found; i++) // secret key length brute force
 	{
 		unsigned char* pad = NULL;
 		unsigned int padLen = 0;
@@ -28,9 +28,13 @@ void sha1_mac_attack(const unsigned char* origMessage, const unsigned int origMe
 		digestor.update(toAppend, toAppendLen);
 		digestor.digest(resultMac, &poisonedMacLen);
 
-		if (verifySHA1Mac(*resultMessage, *resultMessageLen, *resultMac, poisonedMacLen)) // internal buffer for poisoned mac includes 
+		if (verifySHA1Mac(*resultMessage, *resultMessageLen, *resultMac, poisonedMacLen))
+		{
 			found = true;
-
+		} else {
+			delete [] * resultMac;
+			delete [] * resultMessage;
+		}
 		delete [] pad;
 	}
 }
@@ -38,7 +42,7 @@ void sha1_mac_attack(const unsigned char* origMessage, const unsigned int origMe
 void md4_mac_attack(const unsigned char* origMessage, const unsigned int origMessageLen, const unsigned char* toAppend, const unsigned int toAppendLen, const unsigned char* origMac, unsigned char** resultMessage, unsigned int* resultMessageLen, unsigned char** resultMac)
 {
 	bool found = false;
-	for (unsigned int i = 16; i < 17 && !found; i++) // secret key length brute force
+	for (unsigned int i = 0; i < 512 && !found; i++) // secret key length brute force
 	{
 		unsigned char* pad = NULL;
 		unsigned int padLen = 0;
@@ -58,8 +62,13 @@ void md4_mac_attack(const unsigned char* origMessage, const unsigned int origMes
 		digestor.update(toAppend, toAppendLen);
 		digestor.digest(resultMac, &poisonedMacLen);
 
-		if (verifySHA1Mac(*resultMessage, *resultMessageLen, *resultMac, poisonedMacLen)) // internal buffer for poisoned mac includes 
+		if (verifyMD4Mac(*resultMessage, *resultMessageLen, *resultMac, poisonedMacLen))
+		{
 			found = true;
+		} else {
+			delete [] *resultMac;
+			delete [] *resultMessage;
+		}
 
 		delete [] pad;
 	}

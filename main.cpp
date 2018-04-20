@@ -40,9 +40,9 @@ int main(int argc, char** argv)
 	unsigned int hexLen = 0;
 	unsigned int origHashLen = 0;
 
-	generateMD4Mac(orig, origLen, &origHash, &origHashLen);
+	generateSHA1Mac(orig, origLen, &origHash, &origHashLen);
 
-	md4_mac_attack(orig, origLen, attackSuffix, attackSuffixLen, origHash, &attackMessage, &attackMessageLen, &attackMac);
+	sha1_mac_attack(orig, origLen, attackSuffix, attackSuffixLen, origHash, &attackMessage, &attackMessageLen, &attackMac);
 
 	to_hex(attackMessage, &hex, attackMessageLen, &hexLen);
 	cout << "Message: " << endl;
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
 	delete [] hex;
 
-	to_hex(attackMac, &hex, MD4_LENGTH, &hexLen);
+	to_hex(attackMac, &hex, SHA1_LENGTH, &hexLen);
 	cout << "MAC: " << endl;
 	for (unsigned int i = 0; i < hexLen; i++)
 		cout << hex[i];
