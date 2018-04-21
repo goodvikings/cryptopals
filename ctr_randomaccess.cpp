@@ -13,7 +13,7 @@ void ctrRANDRWEncryptFromFile(const char* filename, unsigned char** dest, unsign
 	unsigned int sourceLen = 0;
 	unsigned char* sourceRaw = NULL;
 	
-	readFromFile("/home/ramo/code/cryptopals/25.txt", &source, &sourceLen);
+	readFromFile(filename, &source, &sourceLen);
 	from_base64(source, &sourceRaw, sourceLen, destLen);
 	
 	*dest = new unsigned char[*destLen];

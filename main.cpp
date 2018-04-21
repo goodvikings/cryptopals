@@ -1,24 +1,28 @@
 #include <cstring>
 #include <iostream>
-#include <iomanip>
-#include "aes.h"
-#include "ctr.h"
-#include "encoders.h"
+
 #include "misc.h"
+//#include <iomanip>
+//#include "aes.h"
+//#include "ctr.h"
+//#include "encoders.h"
+//#include "misc.h"
 //#include "mt19937.h"
 //#include "mt19937_attack.h"
 //#include "mt19937_cipher.h"
 //#include "pkcs7.h"
 //#include "ctr_randomaccess.h"
-#include "ctr_bit_flip.h"
-#include "cbc_bit_flip.h"
+//#include "ctr_bit_flip.h"
+//#include "cbc_bit_flip.h"
 //#include "profile.h"
 //#include "cbc_bit_flip.h"
 //#include "cbc_padding.h"
-#include "mac.h"
-#include "mac_attack.h"
-#include "sha1.h"
-#include "md4.h"
+//#include "mac.h"
+//#include "mac_attack.h"
+//#include "sha1.h"
+//#include "md4.h"
+#include <curl/curl.h>
+#include "timing.h"
 
 using namespace std;
 
@@ -28,6 +32,33 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
+	curl_global_init(CURL_GLOBAL_DEFAULT);
+	unsigned char* result = NULL;
+	unsigned int resultLen = 0;
+
+	timingAttack31((unsigned char*) "http://localhost:3001/?file=passwd&signature=", &result, &resultLen);
+
+	for (unsigned int i; i < resultLen; i++)
+		cout << result[i];
+	cout << endl;
+
+	delete [] result;
+	curl_global_cleanup();
+
+	/*
+		const unsigned char orig[] = "The quick brown fox jumps over the lazy dog";
+		const unsigned int origLen = strlen((char*) orig);
+		unsigned char* hmac = NULL;
+		unsigned int hmacLen = 0;
+
+		generateSHA1HMac(orig, origLen, &hmac, &hmacLen);
+
+		for (unsigned int i = 0; i < hmacLen; i++)
+			cout << hmac[i];
+
+		delete [] hmac;
+	 */
+	/*
 	const unsigned char orig[] = "comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon";
 	const unsigned int origLen = strlen((char*) orig);
 	const unsigned char attackSuffix[] = ";admin=true";
@@ -62,7 +93,7 @@ int main(int argc, char** argv)
 	delete [] attackMessage;
 	delete [] attackMac;
 	delete [] hex;
-
+	 */
 	/*
 	unsigned char message[] = "The quick brown fox jumps over the lazy dog";
 	unsigned char* mac = NULL;

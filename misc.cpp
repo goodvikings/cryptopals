@@ -1,4 +1,5 @@
 #include <cstring>
+#include <curl/curl.h>
 #include <fstream>
 #include <string>
 #include "misc.h"
@@ -51,4 +52,19 @@ void encode(const unsigned char* source, const unsigned int sourceLen, unsigned 
 	*dest = new unsigned char[*destLen];
 
 	memcpy(*dest, foo.c_str(), foo.length());
+}
+
+int curl(const unsigned char* url)
+{
+	CURL* curl;
+	unsigned int responseCode = 0;
+	
+	curl = curl_easy_init();
+	curl_easy_setopt(curl, CURLOPT_URL, url);
+	
+	curl_easy_perform(curl);
+	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
+	
+	curl_easy_cleanup(curl);
+	return responseCode;
 }
