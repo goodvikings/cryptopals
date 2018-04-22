@@ -21,6 +21,7 @@
 //#include "sha1.h"
 //#include "md4.h"
 #include "dh_challenges.h"
+#include "srp.h"
 
 using namespace std;
 
@@ -30,15 +31,43 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	mpz_class p("ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552bb9ed529077096966d670c354e4abc9804f1746c08ca237327ffffffffffffffff", 16);
-	mpz_class g("2");
-	mpz_class one("1");
-	mpz_class p_minus_1 = p - one;
+	SRPServer server;
+	SRPClient client;
 	
-	challenge_35(&p, &one);
-	challenge_35(&p, &p);
-	challenge_35(&p, &p_minus_1);
+	mpz_class client_A;
+	mpz_class server_A;
+	char* email;
+	unsigned int salt = 0;
+	
+	server.step1();
+	
+	client.step1(&client_A, &email);
+	
+	server.recvClientStep1(&client_A, email);
+	
+	server.sendSaltAndPub(&salt, &server_A);
 
+
+
+
+
+
+
+
+	
+	delete [] email;
+	
+	
+	/*
+		mpz_class p("ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552bb9ed529077096966d670c354e4abc9804f1746c08ca237327ffffffffffffffff", 16);
+		mpz_class g("2");
+		mpz_class one("1");
+		mpz_class p_minus_1 = p - one;
+	
+		challenge_35(&p, &one);
+		challenge_35(&p, &p);
+		challenge_35(&p, &p_minus_1);
+	 */
 	//	challenge_34();
 	//	challenge_33();	
 	/*	curl_global_init(CURL_GLOBAL_DEFAULT);
