@@ -5,10 +5,10 @@ CC=g++
 BUILD=build
 DIST=dist
 CCFLAGS=-c -g -Wall --std=c++98
-LDFLAGS=-o $(DIST)/prog -lssl -lcrypto -lgmpxx -lgmp -lcurl 
+LDFLAGS=-o $(DIST)/prog -lssl -lcrypto -lcurl -lgmpxx -lgmp 
 
 all:	$(DIST)/prog
-$(DIST)/prog:	$(BUILD) $(DIST) $(BUILD)/xors.o $(BUILD)/timing.o $(BUILD)/kvpair.o $(BUILD)/ctr.o $(BUILD)/language.o $(BUILD)/md4.o $(BUILD)/ctr_bit_flip.o $(BUILD)/main.o $(BUILD)/profile.o $(BUILD)/cbc_bit_flip.o $(BUILD)/misc.o $(BUILD)/mt19937_attack.o $(BUILD)/mt19937.o $(BUILD)/mt19937_cipher.o $(BUILD)/rand.o $(BUILD)/encoders.o $(BUILD)/ecb.o $(BUILD)/cbc_padding.o $(BUILD)/dh.o $(BUILD)/mac.o $(BUILD)/exception.o $(BUILD)/sha1.o $(BUILD)/mac_attack.o $(BUILD)/aes.o $(BUILD)/ctr_randomaccess.o $(BUILD)/pkcs7.o 
+$(DIST)/prog:	$(BUILD) $(DIST) $(BUILD)/xors.o $(BUILD)/timing.o $(BUILD)/kvpair.o $(BUILD)/ctr.o $(BUILD)/language.o $(BUILD)/md4.o $(BUILD)/ctr_bit_flip.o $(BUILD)/main.o $(BUILD)/profile.o $(BUILD)/cbc_bit_flip.o $(BUILD)/misc.o $(BUILD)/mt19937_attack.o $(BUILD)/mt19937.o $(BUILD)/mt19937_cipher.o $(BUILD)/rand.o $(BUILD)/encoders.o $(BUILD)/ecb.o $(BUILD)/cbc_padding.o $(BUILD)/dh.o $(BUILD)/mac.o $(BUILD)/exception.o $(BUILD)/sha1.o $(BUILD)/mac_attack.o $(BUILD)/aes.o $(BUILD)/ctr_randomaccess.o $(BUILD)/pkcs7.o $(BUILD)/dh_challenges.o 
 	$(CC) $(BUILD)/*.o $(LDFLAGS)
 $(BUILD)/xors.o:	xors.cpp language.h xors.h
 	$(CC) xors.cpp $(CCFLAGS) -o $(BUILD)/xors.o
@@ -24,7 +24,7 @@ $(BUILD)/md4.o:	md4.cpp md4.h
 	$(CC) md4.cpp $(CCFLAGS) -o $(BUILD)/md4.o
 $(BUILD)/ctr_bit_flip.o:	ctr_bit_flip.cpp aes.h ctr_bit_flip.h misc.h pkcs7.h
 	$(CC) ctr_bit_flip.cpp $(CCFLAGS) -o $(BUILD)/ctr_bit_flip.o
-$(BUILD)/main.o:	main.cpp misc.h dh.h mt19937.h
+$(BUILD)/main.o:	main.cpp misc.h dh_challenges.h
 	$(CC) main.cpp $(CCFLAGS) -o $(BUILD)/main.o
 $(BUILD)/profile.o:	profile.cpp aes.h pkcs7.h profile.h
 	$(CC) profile.cpp $(CCFLAGS) -o $(BUILD)/profile.o
@@ -62,6 +62,8 @@ $(BUILD)/ctr_randomaccess.o:	ctr_randomaccess.cpp aes.h ctr_randomaccess.h encod
 	$(CC) ctr_randomaccess.cpp $(CCFLAGS) -o $(BUILD)/ctr_randomaccess.o
 $(BUILD)/pkcs7.o:	pkcs7.cpp pkcs7.h
 	$(CC) pkcs7.cpp $(CCFLAGS) -o $(BUILD)/pkcs7.o
+$(BUILD)/dh_challenges.o:	dh_challenges.cpp dh.h dh_challenges.h
+	$(CC) dh_challenges.cpp $(CCFLAGS) -o $(BUILD)/dh_challenges.o
 $(BUILD):
 	@mkdir $(BUILD)
 $(DIST):

@@ -59,6 +59,9 @@ void dhSet::generateKeys(mt19937* generator)
 
 	mpz_powm(this->pub->get_mpz_t(), this->generator->get_mpz_t(), this->priv->get_mpz_t(), this->prime->get_mpz_t());
 
+//	cout << "Pub: " << hex << *this->pub << endl;
+//	cout << "Priv: " << hex << *this->priv << endl;
+	
 	keysSet = true;
 }
 
